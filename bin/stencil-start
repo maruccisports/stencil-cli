@@ -45,6 +45,7 @@ Program
     .option('-e, --theme-editor', 'Run Theme Editor server')
     .option('-n, --no-cache', 'Turns off caching for API resource data per storefront page. The cache lasts for 5 minutes before automatically refreshing.')
     .option('--theme-editor-port [port]', 'Run the Theme Editor on a different port')
+    .option('--no-ghost-mode', 'Disables Browser Sync\'s ghost mode')
     .parse(process.argv);
 
 if (!fileExist(dotStencilFilePath)) {
@@ -269,7 +270,7 @@ function startServer() {
             watchIgnored = stencilConfig.watchOptions.ignored;
         }
 
-        Bs.init({
+        var browserSyncConfig = {
             open: !!Program.open,
             port: browserSyncPort,
             files: watchFiles.map(function (val) {
@@ -283,7 +284,13 @@ function startServer() {
             },
             proxy: "localhost:" + stencilServerPort,
             tunnel: !!Program.tunnel
-        });
+        };
+
+        if (!Program.ghostMode) {
+            browserSyncConfig.ghostMode = false;
+        }
+
+        Bs.init(browserSyncConfig);
 
         // Handle manual reloading of browsers by typing 'rs';
         // Borrowed from https://github.com/remy/nodemon
