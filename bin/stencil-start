@@ -17,6 +17,7 @@ var stencilToken = require('../server/lib/stencil-token');
 var Url = require('url');
 var Wreck = require('wreck');
 var jsonLint = require('../lib/json-lint');
+var versionCheck = require('../lib/version-check');
 var themePath = process.cwd();
 var allowedCssCompilers = ['scss', 'less'];
 var browserSyncPort;
@@ -47,6 +48,11 @@ Program
     .option('--theme-editor-port [port]', 'Run the Theme Editor on a different port')
     .option('--no-ghost-mode', 'Disables Browser Sync\'s ghost mode')
     .parse(process.argv);
+
+
+if (!versionCheck()) {
+    return;
+}
 
 if (!fileExist(dotStencilFilePath)) {
     return console.error('Error: Please run'.red + ' $ stencil init'.cyan + ' first.'.red);
